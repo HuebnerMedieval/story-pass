@@ -52,20 +52,39 @@ function displayBook(e) {
         `
 
         book.pages.forEach(function callback(page, index){
+            newPage = document.createElement('div')
+            newPage.id =  `page-${index+1}`
+            main.appendChild(newPage)
+
             let pageNumber = document.createElement('h3')
             pageNumber.innerHTML = `Page: ${index + 1}`
-            main.appendChild(pageNumber)
+            newPage.appendChild(pageNumber)
             
             let author = document.createElement('h3')
             author.innerHTML = `By: ${page.author}`
-            main.appendChild(author)
+            newPage.appendChild(author)
 
             let content = document.createElement('p')
             content.innerText = `${page.content}`
-            main.appendChild(content)
+            newPage.appendChild(content)
         })
 
-        
+        //new page form
+        let pageForm = document.createElement('form')
+        pageForm.innerHTML = `
+            <form>
+                <label>Your Username: </label>
+                <input type="text" id="author"><br>
+                <label>Content: </label>
+                <input type="textarea" id="content">
+                <input type="hidden" id="book_id" value="${book.id}"> <br>
+                <input type="submit">
+            </form>
+        `
+        main.appendChild(pageForm)
+
+        document.querySelector('form').addEventListener('submit', createPage)
+
     })
 
 }
@@ -107,10 +126,56 @@ const createBook = (e) => {
     .then(resp => resp.json())
     .then(book => {
         main.innerHTML = `
-        <h3>Title: ${book.title}</h3>
+        <h1>Title: ${book.title}</h3>
         `
+
+        
+
     })
 
 
 }
 
+const createPage = (e) => {
+    e.preventDefault()
+
+    let page = {
+        author: e.target.querySelector('#author').value,
+        content: e.target.querySelector('#content').value,
+        book_id: e.target.querySelector('#book_id').value
+    }
+
+    let configObj = {
+        method: 'POST',
+        body: JSON.stringify(page),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    }
+
+    fetch(BASE_URL + '/pages', configObj)
+    .then(resp => resp.json())
+    .then(page => {
+        document.querySelector('form').remove()
+
+        newPage = document.createElement('div')
+        main.appendChild(newPage)
+        number = parseInt(newPage.previousSibling.id.split("-")[1]) + 1
+        newPage.id =  `page-${number}`
+
+        let pageNumber = document.createElement('h3')
+        pageNumber.innerHTML = `Page: ${number}`
+        newPage.appendChild(pageNumber)
+            
+        let author = document.createElement('h3')
+        author.innerHTML = `By: ${page.author}`
+        newPage.appendChild(author)
+
+        let content = document.createElement('p')
+        content.innerText = `${page.content}`
+        newPage.appendChild(content)
+
+    })
+
+}
