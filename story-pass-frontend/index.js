@@ -2,7 +2,11 @@ const BASE_URL = 'http://localhost:3000'
 
 window.addEventListener("DOMContentLoaded", () => {
     getBooks()
+
 })
+
+document.getElementById('book-list').addEventListener("click", () => getBooks())
+
 
 const getBooks = () => {
     let main = document.getElementById('main')
@@ -18,15 +22,16 @@ const getBooks = () => {
             </li>
             `
         })
-        attachClicksToLinks()
+        attachClicksToBooks()
     })
 }
 
-function attachClicksToLinks() {
+function attachClicksToBooks() {
     let books = document.querySelectorAll("li a")
     books.forEach(book => {
         book.addEventListener('click', displayBook)
     })
+
 }
 
 function displayBook(e) {
