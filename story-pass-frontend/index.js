@@ -3,9 +3,13 @@ const BASE_URL = 'http://localhost:3000'
 window.addEventListener("DOMContentLoaded", () => {
     getBooks()
 
+    document.getElementById('book-list').addEventListener("click", getBooks)
+
+    document.getElementById('book-form').addEventListener("click", bookForm)
+
 })
 
-document.getElementById('book-list').addEventListener("click", () => getBooks())
+
 
 
 const getBooks = () => {
@@ -66,4 +70,47 @@ function displayBook(e) {
 
 }
 
+const bookForm = () => {
+    let main = document.getElementById('main')
+    
+    let form = `
+        <form>
+            <label>Title: </label>
+            <input type="text" id="title">
+            <input type="submit">
+        </form>
+    `
+    
+    main.innerHTML = form
+
+    document.querySelector('form').addEventListener('submit', createBook)
+
+}
+
+const createBook = (e) => {
+    e.preventDefault()
+    let book = {
+        title: e.target.querySelector("#title").value,
+        finished: false
+    }
+
+    let configObj = {
+        method: 'POST',
+        body: JSON.stringify(book),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    }
+
+    fetch(BASE_URL + '/books', configObj)
+    .then(resp => resp.json())
+    .then(book => {
+        main.innerHTML = `
+        <h3>Title: ${book.title}</h3>
+        `
+    })
+
+
+}
 
