@@ -129,7 +129,21 @@ const createBook = (e) => {
         <h1>Title: ${book.title}</h3>
         `
 
-        
+        let pageForm = document.createElement('form')
+        pageForm.innerHTML = `
+            <form>
+                <label>Your Username: </label>
+                <input type="text" id="author"><br>
+                <label>Content: </label>
+                <input type="textarea" id="content">
+                <input type="hidden" id="book_id" value="${book.id}"> <br>
+                <input type="submit">
+            </form>
+        `
+        main.appendChild(pageForm)
+
+        document.querySelector('form').addEventListener('submit', createPage)
+
 
     })
 
@@ -161,8 +175,15 @@ const createPage = (e) => {
 
         newPage = document.createElement('div')
         main.appendChild(newPage)
-        number = parseInt(newPage.previousSibling.id.split("-")[1]) + 1
-        newPage.id =  `page-${number}`
+
+        let number
+        if(!!newPage.previousSibling.id){
+            number = parseInt(newPage.previousSibling.id.split("-")[1]) + 1
+            newPage.id =  `page-${number}`
+        }else{
+            number = "1"
+            newPage.id = `page-${number}`
+        }
 
         let pageNumber = document.createElement('h3')
         pageNumber.innerHTML = `Page: ${number}`
