@@ -1,40 +1,67 @@
 //sets constant to localhost:300 for easy repeated use
-const BASE_URL = 'http://localhost:3000'
+// const BASE_URL = 'http://localhost:3000'
 
-//startup routine
-window.addEventListener("DOMContentLoaded", () => {
-    //prints the list of books on screen
-    getBooks()
+// //startup routine
+// window.addEventListener("DOMContentLoaded", () => {
+    //     //prints the list of books on screen
+    //     getBooks()
+    
+    //     //sets up story list link 
+    //     document.getElementById('book-list').addEventListener("click", getBooks)
+    
+    //     //sets up new book form link
+    //     document.getElementById('book-form').addEventListener("click", bookForm)
+    
+    // })
 
+const apiService = new ApiService()
+
+let main = document.getElementById('main')
+
+const init = () => {
+    bindEventListeners()
+    renderBooks()
+}
+
+function bindEventListeners() {
     //sets up story list link 
     document.getElementById('book-list').addEventListener("click", getBooks)
 
     //sets up new book form link
     document.getElementById('book-form').addEventListener("click", bookForm)
-
-})
+}
 
 //function to generate a list of books in #main
-const getBooks = () => {
-    //clears #main
-    let main = document.getElementById('main')
-    main.innerHTML = ""
+//replaced with renderBooks() and moved to ApiService.js
+// const getBooks = () => {
+//     //clears #main
+//     main.innerHTML = ""
 
-    //call to backend for the book index json
-    fetch(BASE_URL + '/books')
-    .then(resp => resp.json())
-    .then(books => {
+//     //call to backend for the book index json
+
+//     fetch(BASE_URL + '/books')
+//     .then(resp => resp.json())
+//     .then(books => {
         
-        //iterates through the array of books and adds a link to #main and adds the id to the dataset
-        books.map(book => {
-            main.innerHTML += `
-            <li>
-                <a href="#" data-id="${book.id}">${book.title}</a>
-            </li>
-            `
-        })
+//         //iterates through the array of books and adds a link to #main and adds the id to the dataset
+//         books.map(book => {
+//             main.innerHTML += `
+//             <li>
+//                 <a href="#" data-id="${book.id}">${book.title}</a>
+//             </li>
+//             `
+//         })
 
-        attachClicksToBooks()
+//         attachClicksToBooks()
+//     })
+// }
+
+async function renderBooks() {
+    const books = await apiService.fetchBooks()
+    main.innerHTML = ""
+    books.map(book => {
+        const newBook = new Book(book)
+        main.innerHTML += newBook.render()
     })
 }
 
@@ -53,7 +80,6 @@ function displayBook(e) {
     let id = e.target.dataset.id
 
     //clears #main
-    let main = document.getElementById('main')
     main.innerHTML = ""
 
     //call to backend for the book show page json
@@ -63,12 +89,13 @@ function displayBook(e) {
         
         //adds book title to the top of #main
         main.innerHTML = `
-            <h3>Title: ${book.title}</h3>
+            <h1>Title: ${book.title}</h1>
         `
 
         //iterates through the nested json pages of the book
         book.pages.forEach(function callback(page, index){
             //creates a new div with #page-number
+            //everything below here also happens in the createPage function
             newPage = document.createElement('div')
             newPage.id =  `page-${index+1}`
             main.appendChild(newPage)
@@ -114,7 +141,6 @@ function displayBook(e) {
 
 //replaces the innerHTML on #main with the new book form
 const bookForm = () => {
-    let main = document.getElementById('main')
     let form = `
         <form>
             <label>Title: </label>
@@ -157,7 +183,7 @@ const createBook = (e) => {
         
         //replaces the content of #main with the title of the book
         main.innerHTML = `
-        <h1>Title: ${book.title}</h3>
+            <h1>Title: ${book.title}</h3>
         `
 
         //adds a new page form to the end of #main
@@ -249,3 +275,5 @@ const createPage = (e) => {
     })
 
 }
+
+init()
