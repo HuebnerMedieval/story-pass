@@ -1,18 +1,3 @@
-//sets constant to localhost:300 for easy repeated use
-// const BASE_URL = 'http://localhost:3000'
-
-// //startup routine
-// window.addEventListener("DOMContentLoaded", () => {
-    //     //prints the list of books on screen
-    //     getBooks()
-    
-    //     //sets up story list link 
-    //     document.getElementById('book-list').addEventListener("click", getBooks)
-    
-    //     //sets up new book form link
-    //     document.getElementById('book-form').addEventListener("click", bookForm)
-    
-    // })
 
 const apiService = new ApiService()
 
@@ -23,49 +8,24 @@ const init = () => {
     renderBooks()
 }
 
-function bindEventListeners() {
-    //sets up story list link 
-    document.getElementById('book-list').addEventListener("click", getBooks)
+function bindEventListeners() { 
+    document.getElementById('book-list').addEventListener("click", renderBooks)
 
-    //sets up new book form link
     document.getElementById('book-form').addEventListener("click", bookForm)
 }
 
-//function to generate a list of books in #main
-//replaced with renderBooks() and moved to ApiService.js
-// const getBooks = () => {
-//     //clears #main
-//     main.innerHTML = ""
-
-//     //call to backend for the book index json
-
-//     fetch(BASE_URL + '/books')
-//     .then(resp => resp.json())
-//     .then(books => {
-        
-//         //iterates through the array of books and adds a link to #main and adds the id to the dataset
-//         books.map(book => {
-//             main.innerHTML += `
-//             <li>
-//                 <a href="#" data-id="${book.id}">${book.title}</a>
-//             </li>
-//             `
-//         })
-
-//         attachClicksToBooks()
-//     })
-// }
-
 async function renderBooks() {
-    const books = await apiService.fetchBooks()
     main.innerHTML = ""
-    books.map(book => {
+    const books = await apiService.fetchBooks()
+    books.forEach(book => {
         const newBook = new Book(book)
-        main.innerHTML += newBook.render()
+        main.innerHTML += newBook.bookLink()
     })
+
+    attachClicksToBooks()
+
 }
 
-//adds event listeners to newly generated links
 function attachClicksToBooks() {
     let books = document.querySelectorAll("li a")
     books.forEach(book => {
@@ -74,72 +34,35 @@ function attachClicksToBooks() {
 
 }
 
-//callback function for a click on a book title
-function displayBook(e) {
-    //grabs id of the book from the dataset
+async function displayBook(e) {
+
+    main.innerHTML = ""
     let id = e.target.dataset.id
 
-    //clears #main
-    main.innerHTML = ""
+    const data = await apiService.fetchBook(id)
 
-    //call to backend for the book show page json
-    fetch(BASE_URL + `/books/${id}`)
-    .then(resp => resp.json())
-    .then(book => {
-        
-        //adds book title to the top of #main
-        main.innerHTML = `
-            <h1>Title: ${book.title}</h1>
-        `
+    const book = new Book(data)
+    
+    main.innerHTML = book.renderTitle()
+    book.renderPages()
 
-        //iterates through the nested json pages of the book
-        book.pages.forEach(function callback(page, index){
-            //creates a new div with #page-number
-            //everything below here also happens in the createPage function
-            newPage = document.createElement('div')
-            newPage.id =  `page-${index+1}`
-            main.appendChild(newPage)
+    let pageForm = document.createElement('form')
+    main.appendChild(pageForm)
+    pageForm.innerHTML = `
+        <form>
+            <label>Your Username: </label>
+            <input type="text" id="author"><br>
+            <label>Content: </label>
+            <input type="textarea" id="content">
+            <input type="hidden" id="book_id" value="${book.id}"> <br>
+            <input type="submit">
+        </form>
+    `
 
-            //prints the page number at the top of the div
-            let pageNumber = document.createElement('h3')
-            pageNumber.innerHTML = `Page: ${index + 1}`
-            newPage.appendChild(pageNumber)
-            
-            //attached the author to the div
-            let author = document.createElement('h3')
-            author.innerHTML = `By: ${page.author}`
-            newPage.appendChild(author)
-
-            //attaches the content to the div
-            let content = document.createElement('p')
-            content.innerText = `${page.content}`
-            newPage.appendChild(content)
-        })
-
-        //adds the new page form after the last page is displayed
-        //same as below create a new function as addForm
-        let pageForm = document.createElement('form')
-        pageForm.innerHTML = `
-            <form>
-                <label>Your Username: </label>
-                <input type="text" id="author"><br>
-                <label>Content: </label>
-                <input type="textarea" id="content">
-                <input type="hidden" id="book_id" value="${book.id}"> <br>
-                <input type="submit">
-            </form>
-        `
-        main.appendChild(pageForm)
-
-        //adds event listener to the new page form to create a new form
-        document.querySelector('form').addEventListener('submit', createPage)
-        //end of same content
-
-    })
+    document.querySelector('form').addEventListener('submit', createPage)
 
 }
 
-//replaces the innerHTML on #main with the new book form
 const bookForm = () => {
     let form = `
         <form>

@@ -3,26 +3,18 @@ class ApiService {
         this.baseURL = 'http://localhost:3000'
     }
 
-    fetchBooks () {
-//     //clears #main
-        main.innerHTML = ""
+    async fetchBooks () {
+        let resp = await fetch(this.baseURL + '/books')
+        let data = await resp.json()
+        return data
 
-        //call to backend for the book index json
+    }
 
-        fetch(BASE_URL + '/books')
-        .then(resp => resp.json())
-        .then(books => {
-        
-            //iterates through the array of books and adds a link to #main and adds the id to the dataset
-            books.map(book => {
-                main.innerHTML += `
-                <li>
-                    <a href="#" data-id="${book.id}">${book.title}</a>
-                </li>
-                `
-            })
+    async fetchBook(id){
+        let resp = await fetch(this.baseURL + `/books/${id}`)
+        let data = await resp.json()
+        return data
+    }
 
-        attachClicksToBooks()
-    })
-}
+
 }
