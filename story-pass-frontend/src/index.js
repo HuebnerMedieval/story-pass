@@ -46,20 +46,7 @@ async function displayBook(e) {
     main.innerHTML = book.renderTitle()
     book.renderPages()
 
-    let pageForm = document.createElement('form')
-    main.appendChild(pageForm)
-    pageForm.innerHTML = `
-        <form>
-            <label>Your Username: </label>
-            <input type="text" id="author"><br>
-            <label>Content: </label>
-            <input type="textarea" id="content">
-            <input type="hidden" id="book_id" value="${book.id}"> <br>
-            <input type="submit">
-        </form>
-    `
-
-    document.querySelector('form').addEventListener('submit', createPage)
+    displayPageForm(book)    
 
 }
 
@@ -73,69 +60,30 @@ const bookForm = () => {
     `
     main.innerHTML = form
 
-    //adds event listener to the form to create a new book on submit
     document.querySelector('form').addEventListener('submit', createBook)
 
 }
 
 //on submission of book form, sends data to backend to create a new book entry in the db
-const createBook = (e) => {
+async function createBook (e) {
     e.preventDefault()
 
-    //has of the data for the new book
-    //be replaced by javascript object?
     let book = {
         title: e.target.querySelector("#title").value,
         finished: false
     }
 
-    //allows the fetch to send a post request to the backend
-    let configObj = {
-        method: 'POST',
-        body: JSON.stringify(book),
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    }
+    let data = await apiService.fetchCreateBook(book)
+    let newBook = new Book(data)
+    main.innerHTML = newBook.renderTitle
 
-    //post request to the backend sent to create_book route
-    fetch(BASE_URL + '/books', configObj)
-    .then(resp => resp.json())
-    .then(book => {
-        
-        //replaces the content of #main with the title of the book
-        main.innerHTML = `
-            <h1>Title: ${book.title}</h3>
-        `
-
-        //adds a new page form to the end of #main
-        //same as above create a new function as addForm
-        let pageForm = document.createElement('form')
-        pageForm.innerHTML = `
-            <form>
-                <label>Your Username: </label>
-                <input type="text" id="author"><br>
-                <label>Content: </label>
-                <input type="textarea" id="content">
-                <input type="hidden" id="book_id" value="${book.id}"> <br>
-                <input type="submit">
-            </form>
-        `
-        main.appendChild(pageForm)
-
-        //adds event listenert to the form to create a new page
-        document.querySelector('form').addEventListener('submit', createPage)
-        //end of same content
-
-
-    })
+    displayPageForm(book)
 
 
 }
 
 //on submission of page form, sends data to backend to create a new page entry in the db
-const createPage = (e) => {
+async function createPage (e) {
     e.preventDefault()
 
     //holds data for the new page to be sent to the backend
@@ -197,6 +145,23 @@ const createPage = (e) => {
 
     })
 
+}
+
+function displayPageForm(book){
+    let pageForm = document.createElement('form')
+    main.appendChild(pageForm)
+    pageForm.innerHTML = `
+        <form>
+            <label>Your Username: </label>
+            <input type="text" id="author"><br>
+            <label>Content: </label>
+            <input type="textarea" id="content">
+            <input type="hidden" id="book_id" value="${book.id}"> <br>
+            <input type="submit">
+        </form>
+    `
+
+    document.querySelector('form').addEventListener('submit', createPage)
 }
 
 init()

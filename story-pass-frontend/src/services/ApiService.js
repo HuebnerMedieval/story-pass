@@ -16,5 +16,24 @@ class ApiService {
         return data
     }
 
+    async fetchCreateBook(bookData){
+        let configObj = {
+            method: 'POST',
+            body: JSON.stringify(bookData),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }
+
+        let resp = await fetch(this.baseURL + `/books`, configObj)
+        let data = await resp.json()
+
+        return data
+
+    }
+
+    async fetchCreatePage
+
 
 }
