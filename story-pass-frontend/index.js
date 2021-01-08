@@ -22,7 +22,6 @@ const getBooks = () => {
             main.innerHTML += `
             <li>
                 <a href="#" data-id="${book.id}">${book.title}</a>
-                - ${book.finished ? "Finished" : "Work in Progress"}
             </li>
             `
         })
