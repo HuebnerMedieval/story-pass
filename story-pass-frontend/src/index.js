@@ -108,10 +108,13 @@ async function createPage (e) {
     pageDiv.innerHTML += newPage.renderPage(pageNumber)
     
     let thanks = `
-        <h5>What's Next?</h5>
-        <p>Thank you for your addition. Now let someone else continue the story!</p>
+        <div id="thanks">
+            <h5>What's Next?</h5>
+            <p>Thank you for your addition. Now let someone else continue the story!</p>
+        </div>
     `
     main.innerHTML += thanks
+    document.getElementById("thanks").style.color = "blue"
     
 }
 
