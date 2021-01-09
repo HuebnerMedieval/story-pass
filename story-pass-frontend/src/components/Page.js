@@ -5,21 +5,12 @@ class Page {
         this.content = data.content
     }
 
-    renderNumber(num){
+    renderPage(num){
         return `
-            <h3>Page - ${num}</h3>
-        `
-    }
-
-    renderAuthor(){
-        return `
-            <h3>By: ${this.author}</h3>
-        `
-    }
-
-    renderContent(){
-        return `
-            <p>${this.content}</p> <hr>
+        <h3>Page - ${num}</h3>
+        <h3>By: ${this.author}</h3>
+        <p>${this.content}</p>
+        <hr>
         `
     }
 }

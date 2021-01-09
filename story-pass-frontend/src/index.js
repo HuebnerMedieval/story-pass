@@ -64,93 +64,59 @@ const bookForm = () => {
 
 }
 
-//on submission of book form, sends data to backend to create a new book entry in the db
 async function createBook (e) {
     e.preventDefault()
 
     let book = {
         title: e.target.querySelector("#title").value,
-        finished: false
     }
 
     let data = await apiService.fetchCreateBook(book)
-    let newBook = new Book(data)
-    main.innerHTML = newBook.renderTitle
+    const newBook = new Book(data)
+    main.innerHTML = newBook.renderTitle()
 
-    displayPageForm(book)
+    displayPageForm(newBook)
 
 
 }
 
-//on submission of page form, sends data to backend to create a new page entry in the db
 async function createPage (e) {
     e.preventDefault()
 
-    //holds data for the new page to be sent to the backend
     let page = {
         author: e.target.querySelector('#author').value,
         content: e.target.querySelector('#content').value,
         book_id: e.target.querySelector('#book_id').value
     }
 
-    //allows the fetch to send a post request to the backend
-    let configObj = {
-        method: 'POST',
-        body: JSON.stringify(page),
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
+    let data = await apiService.fetchCreatePage(page)
+    
+    let newPage = new Page(data)
+
+    document.querySelector('form').remove()
+
+    let pageDiv = document.createElement('div')
+    main.appendChild(pageDiv)
+
+    let pageNumber
+    if(!!pageDiv.previousElementSibling){
+        pageNumber = parseInt(pageDiv.previousElementSibling.id.split("-")[1]) + 1
+    }else{
+        pageNumber = 1
     }
-
-    //sends post request to the backend create_page route
-    fetch(BASE_URL + '/pages', configObj)
-    .then(resp => resp.json())
-    .then(page => {
-        
-        //removed new page form from #main
-        document.querySelector('form').remove()
-
-        //everything below this point is the same as in the displayBook function
-        //creates a new div and adds it to the end of #main
-        newPage = document.createElement('div')
-        main.appendChild(newPage)
-
-        //initializes number
-        let number
-
-        //control flow to determine how to number the new page
-        if(!!newPage.previousSibling.id){
-            number = parseInt(newPage.previousSibling.id.split("-")[1]) + 1
-            newPage.id =  `page-${number}`
-        }else{
-            number = "1"
-            newPage.id = `page-${number}`
-        }
-
-        //adds the page number to the div
-        let pageNumber = document.createElement('h3')
-        pageNumber.innerHTML = `Page: ${number}`
-        newPage.appendChild(pageNumber)
-            
-        //adds the author to the div
-        let author = document.createElement('h3')
-        author.innerHTML = `By: ${page.author}`
-        newPage.appendChild(author)
-
-        //adds the content to the div
-        let content = document.createElement('p')
-        content.innerText = `${page.content}`
-        newPage.appendChild(content)
-
-    })
-
+    pageDiv.id = pageNumber
+    pageDiv.innerHTML += newPage.renderPage(pageNumber)
+    
+    let thanks = `
+        <h5>What's Next?</h5>
+        <p>Thank you for your addition. Now let someone else continue the story!</p>
+    `
+    main.innerHTML += thanks
+    
 }
 
-function displayPageForm(book){
-    let pageForm = document.createElement('form')
-    main.appendChild(pageForm)
-    pageForm.innerHTML = `
+function displayPageForm(book) {
+    let form = `
         <form>
             <label>Your Username: </label>
             <input type="text" id="author"><br>
@@ -160,6 +126,8 @@ function displayPageForm(book){
             <input type="submit">
         </form>
     `
+    main.innerHTML += form
+
 
     document.querySelector('form').addEventListener('submit', createPage)
 }

@@ -26,12 +26,8 @@ class Book {
             let pageDiv = document.createElement('div')
             main.appendChild(pageDiv)
 
-            pageDiv.id = pageNumber
-            pageDiv.innerHTML = newPage.renderNumber(pageNumber)
-
-            pageDiv.innerHTML += newPage.renderAuthor()
-
-            pageDiv.innerHTML += newPage.renderContent()
+            pageDiv.id = `page-${pageNumber}`
+            pageDiv.innerHTML += newPage.renderPage(pageNumber)
             pageNumber += 1
             }
         )

@@ -33,7 +33,21 @@ class ApiService {
 
     }
 
-    async fetchCreatePage
+    async fetchCreatePage(pageData){
+        let configObj = {
+            method: 'POST',
+            body: JSON.stringify(pageData),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }
+
+        let resp = await fetch(this.baseURL + '/pages', configObj)
+        let data = await resp.json()
+
+        return data
+    }
 
 
 }
