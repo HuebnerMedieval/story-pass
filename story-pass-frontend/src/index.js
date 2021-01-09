@@ -98,11 +98,13 @@ async function createPage (e) {
     let pageDiv = document.createElement('div')
     main.appendChild(pageDiv)
 
-    let pageNumber = 1
-    if(pageDiv.previousElementSibling.id.split("1")[0] == "page"){
+    let pageNumber
+    if(pageDiv.previousElementSibling.id.split("-")[0] == "page"){
         pageNumber = parseInt(pageDiv.previousElementSibling.id.split("-")[1]) + 1
+    }else{
+        pageNumber = 1
     }
-    pageDiv.id = pageNumber
+    pageDiv.id = `page-${pageNumber}`
     pageDiv.innerHTML += newPage.renderPage(pageNumber)
     
     let thanks = `
