@@ -98,11 +98,9 @@ async function createPage (e) {
     let pageDiv = document.createElement('div')
     main.appendChild(pageDiv)
 
-    let pageNumber
-    if(!!pageDiv.previousElementSibling){
+    let pageNumber = 1
+    if(pageDiv.previousElementSibling.id.split("1")[0] == "page"){
         pageNumber = parseInt(pageDiv.previousElementSibling.id.split("-")[1]) + 1
-    }else{
-        pageNumber = 1
     }
     pageDiv.id = pageNumber
     pageDiv.innerHTML += newPage.renderPage(pageNumber)
@@ -121,12 +119,14 @@ function displayPageForm(book) {
             <label>Your Username: </label>
             <input type="text" id="author"><br>
             <label>Content: </label>
-            <input type="textarea" id="content">
+            <textarea rows="4" cols="50" id="content"> </textarea>
             <input type="hidden" id="book_id" value="${book.id}"> <br>
             <input type="submit">
         </form>
     `
     main.innerHTML += form
+
+    let content = document.getElementById('content')
 
 
     document.querySelector('form').addEventListener('submit', createPage)
