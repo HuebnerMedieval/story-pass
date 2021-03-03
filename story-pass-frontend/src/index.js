@@ -12,6 +12,7 @@ function bindEventListeners() {
     document.getElementById('book-list').addEventListener("click", renderBooks)
 
     document.getElementById('book-form').addEventListener("click", bookForm)
+
 }
 
 async function renderBooks() {
